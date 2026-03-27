@@ -49,7 +49,7 @@ export function EventFiltersForm({ currentFilters }: EventFiltersFormProps): Rea
   const isFirstRender = useRef(true);
 
   const hasFilters =
-    currentFilters.search || currentFilters.category || currentFilters.priceMax || currentFilters.status;
+    currentFilters.search || currentFilters.category || currentFilters.priceMax !== undefined || currentFilters.status;
 
   // Efecto para auto-submit cuando cambia el texto debounced
   useEffect(() => {
@@ -98,7 +98,7 @@ export function EventFiltersForm({ currentFilters }: EventFiltersFormProps): Rea
           {/* Categoría */}
           <select
             name="category"
-            defaultValue={currentFilters.category ?? ''}
+            value={currentFilters.category ?? ''}
             onChange={handleFilterChange}
             className="h-10 w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
           >
@@ -113,7 +113,7 @@ export function EventFiltersForm({ currentFilters }: EventFiltersFormProps): Rea
           {/* Status */}
           <select
             name="status"
-            defaultValue={currentFilters.status ?? ''}
+            value={currentFilters.status ?? ''}
             onChange={handleFilterChange}
             className="h-10 w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
           >
@@ -128,7 +128,7 @@ export function EventFiltersForm({ currentFilters }: EventFiltersFormProps): Rea
           {/* Precio maximo */}
           <select
             name="priceMax"
-            defaultValue={currentFilters.priceMax?.toString() ?? ''}
+            value={currentFilters.priceMax?.toString() ?? ''}
             onChange={handleFilterChange}
             className="h-10 w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
           >
