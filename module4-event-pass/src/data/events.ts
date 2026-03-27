@@ -159,7 +159,13 @@ const initialEvents: Event[] = [
  * Array mutable que actúa como "base de datos".
  * Se inicializa con los eventos de ejemplo.
  */
-const events: Event[] = [...initialEvents];
+const globalForEvents = global as typeof global & { __events?: Event[] };
+
+if (!globalForEvents.__events) {
+  globalForEvents.__events = [...initialEvents];
+}
+
+const events = globalForEvents.__events;
 
 // =============================================================================
 // FUNCIONES DE ACCESO A DATOS

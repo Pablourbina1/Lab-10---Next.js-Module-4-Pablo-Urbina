@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button';
 import { registerForEventAction } from '@/actions/eventActions';
 import { Loader2, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
 
 interface RegisterButtonProps {
   eventId: string;
@@ -44,6 +45,10 @@ export function RegisterButton({
   availableSpots,
   isAvailable,
 }: RegisterButtonProps): React.ReactElement {
+  /** Exito o fracaso al momento de registrar */
+  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+
   /**
    * useTransition permite marcar actualizaciones como no urgentes.
    * isPending indica si hay una transición en progreso.
@@ -63,25 +68,29 @@ export function RegisterButton({
   );
 
   // Estado derivado
-  const showRegistered = optimisticSpots < availableSpots;
-  const canRegister = isAvailable && optimisticSpots > 0 && !showRegistered;
+  const showRegistered = status === 'success';
+  const canRegister = isAvailable && optimisticSpots > 0 && status !== 'success';
 
   /**
    * Handler del registro.
    */
   async function handleRegister(): Promise<void> {
     // 1. Actualización optimista inmediata
-    addOptimistic('register');
+    
 
     // 2. Ejecutar Server Action en una transición
     startTransition(async () => {
+      addOptimistic('register');
       const result = await registerForEventAction(eventId);
 
       if (!result.success) {
         // Si falla, podríamos mostrar un toast de error
         // El estado optimista se revierte automáticamente
-        console.error('Error al registrar:', result.message);
+        setStatus('error');
+        return;
       }
+
+      setStatus('success');
     });
   }
 
@@ -104,10 +113,21 @@ export function RegisterButton({
     );
   }
 
+  
+
   return (
+    <div className="w-full space-y-2">
+    {status === 'error' && (
+      <p className="text-sm text-red-500">
+        Error al registrarse. Intenta de nuevo.
+      </p>
+    )}
+
+
+
     <Button
       onClick={handleRegister}
-      disabled={isPending}
+      disabled={isPending || !canRegister}
       className={cn('w-full gap-2', isPending && 'cursor-wait')}
     >
       {isPending ? (
@@ -119,5 +139,6 @@ export function RegisterButton({
         `Registrarme (${optimisticSpots} plazas)`
       )}
     </Button>
+    </div>
   );
 }
